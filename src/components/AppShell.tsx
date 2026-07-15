@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { useAuth } from '../lib/auth';
-import { useWorkspace, useIsAdmin } from '../lib/workspace';
+import { useWorkspace } from '../lib/workspace';
 import { useToast } from '../lib/toast';
 import { Logo } from './Logo';
 import { Avatar } from './Avatar';
@@ -18,7 +18,6 @@ import {
   X,
   CheckCircle2,
   Receipt,
-  CreditCard,
 } from 'lucide-react';
 
 export type PageId = 'dashboard' | 'shifts' | 'reports' | 'invoices' | 'chat' | 'profile';
@@ -47,17 +46,10 @@ export function AppShell({ page, onNavigate, children }: AppShellProps) {
   const [newWsName, setNewWsName] = useState('');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const isAdminUser = useIsAdmin();
-  const [showPaywall, setShowPaywall] = useState(false);
-
   const [creatingWs, setCreatingWs] = useState(false);
 
   function handleNewWorkspaceClick() {
-    if (isAdminUser) {
-      setShowCreateWs(true);
-    } else {
-      setShowPaywall(true);
-    }
+    setShowCreateWs(true);
   }
 
   async function handleCreateWs(e: React.FormEvent) {
@@ -236,45 +228,6 @@ export function AppShell({ page, onNavigate, children }: AppShellProps) {
         </main>
       </div>
 
-      {/* Subscription paywall modal */}
-      {showPaywall && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4" onClick={() => setShowPaywall(false)}>
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-green-50">
-                <CreditCard className="h-5 w-5 text-brand-green-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">Subscription Required</h2>
-                <p className="text-sm text-slate-500">To create a workspace</p>
-              </div>
-            </div>
-            <div className="space-y-3 rounded-lg bg-slate-50 p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">First month</span>
-                <span className="text-lg font-bold text-brand-green-600">$1.00</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Every month after</span>
-                <span className="text-lg font-bold text-slate-900">$20.00/mo</span>
-              </div>
-            </div>
-            <p className="mt-4 text-sm text-slate-500">
-              Creating a workspace requires an active subscription. Once Stripe is connected, you'll be able to
-              subscribe and create your workspace here.
-            </p>
-            <a href="https://bolt.new/setup/stripe" className="mt-3 inline-block text-sm font-medium text-brand-green-600 hover:text-brand-green-700">
-              Set up Stripe payments
-            </a>
-            <div className="mt-5 flex gap-3">
-              <button className="btn-primary flex-1 opacity-60 cursor-not-allowed" disabled>
-                Subscribe & Create
-              </button>
-              <button className="btn-ghost" onClick={() => setShowPaywall(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

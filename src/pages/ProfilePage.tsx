@@ -1,16 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../lib/auth';
-import { useWorkspace, useIsAdmin } from '../lib/workspace';
+import { useWorkspace } from '../lib/workspace';
 import { supabase } from '../lib/supabase';
 import { Avatar } from '../components/Avatar';
 import { eur, formatDate, hoursBetween, cn } from '../lib/utils';
 import type { ShiftTask } from '../lib/types';
-import { Loader2, Upload, Check, Mail, Calendar, Clock, TrendingUp, CreditCard, Shield, Globe } from 'lucide-react';
+import { Loader2, Upload, Check, Mail, Calendar, Clock, TrendingUp, Globe } from 'lucide-react';
 
 export function ProfilePage() {
   const { profile, user, refreshProfile } = useAuth();
-  const { activeWorkspace, activeSubscription, activeRole } = useWorkspace();
-  const isAdminUser = useIsAdmin();
+  const { activeWorkspace, activeRole } = useWorkspace();
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '');
   const [username, setUsername] = useState(profile?.username ?? '');
   const [bio, setBio] = useState(profile?.bio ?? '');
@@ -188,52 +187,6 @@ export function ProfilePage() {
           </div>
         ))}
       </div>
-
-      {/* Subscription section */}
-      {activeWorkspace && activeRole === 'owner' && !isAdminUser && (
-        <div className="mt-6 card p-6">
-          <h2 className="mb-4 text-lg font-semibold text-slate-900">Workspace Subscription</h2>
-          <div className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-4">
-            <div className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-lg',
-              activeSubscription?.status === 'active' ? 'bg-brand-green-50 text-brand-green-600' : 'bg-brand-yellow-50 text-brand-yellow-600'
-            )}>
-              <CreditCard className="h-5 w-5" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-slate-900">
-                {activeSubscription?.status === 'active' ? 'Active Subscription' : 'No Active Subscription'}
-              </p>
-              <p className="text-sm text-slate-500">
-                {activeSubscription?.status === 'active'
-                  ? `First month: $1.00, then $20.00/month`
-                  : 'Subscribe to unlock workspace creation: $1 first month, then $20/month.'}
-              </p>
-            </div>
-          </div>
-          {activeSubscription?.status !== 'active' && (
-            <div className="mt-4 rounded-lg border border-brand-yellow-200 bg-brand-yellow-50 p-4">
-              <p className="text-sm text-brand-yellow-800">
-                To activate this workspace, a Stripe payment integration is required. Once Stripe is configured,
-                you'll be able to subscribe here with your first month at $1 and $20/month thereafter.
-              </p>
-              <a href="https://bolt.new/setup/stripe" className="mt-3 inline-block text-sm font-medium text-brand-green-600 hover:text-brand-green-700">
-                Set up Stripe payments
-              </a>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Admin badge */}
-      {isAdminUser && (
-        <div className="mt-6 card p-4">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Shield className="h-4 w-4 text-brand-green-600" />
-            <span>Admin account - workspace creation and subscriptions are exempt.</span>
-          </div>
-        </div>
-      )}
 
       {/* Edit form */}
       <div className="mt-6 card p-6">

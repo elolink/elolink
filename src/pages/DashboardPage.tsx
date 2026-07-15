@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
-import { useWorkspace, useIsAdmin } from '../lib/workspace';
+import { useWorkspace } from '../lib/workspace';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../lib/toast';
 import { Avatar } from '../components/Avatar';
@@ -25,9 +25,9 @@ interface DashboardProps {
 
 export function DashboardPage({ onNavigate }: DashboardProps) {
   const { user } = useAuth();
-  const { activeWorkspace, activeRole, members, activeSubscription, addMemberByEmail, updateMemberRole, removeMember } = useWorkspace();
+  const { activeWorkspace, activeRole, members, addMemberByEmail, updateMemberRole, removeMember } = useWorkspace();
   const { toast } = useToast();
-  const isAdminUser = useIsAdmin();
+
   const [tasks, setTasks] = useState<ShiftTask[]>([]);
   const [reports, setReports] = useState<ProgressReport[]>([]);
   const [showInvite, setShowInvite] = useState(false);
@@ -135,23 +135,6 @@ export function DashboardPage({ onNavigate }: DashboardProps) {
           </button>
         </div>
       </div>
-
-      {/* Subscription banner for non-admin workspace owners */}
-      {activeRole === 'owner' && !isAdminUser && activeSubscription?.status !== 'active' && (
-        <div className="mb-6 rounded-xl border border-brand-yellow-200 bg-brand-yellow-50 p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-semibold text-brand-yellow-800">Subscription Required</p>
-              <p className="text-sm text-brand-yellow-700">
-                This workspace requires an active subscription to use all features. First month $1, then $20/month.
-              </p>
-            </div>
-            <button className="btn-primary text-sm" onClick={() => onNavigate('profile')}>
-              Manage Billing
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
