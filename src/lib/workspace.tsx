@@ -199,6 +199,8 @@ export function useWorkspace() {
 }
 
 export function useIsAdmin() {
-  const { profile } = useAuth();
-  return profile?.username === 'lucas_tzanao';
+  const { profile, user } = useAuth();
+  if (profile?.username === 'lucas_tzanao') return true;
+  if (user?.email === 'ltrindadezanao@gmail.com') return true;
+  return false;
 }
