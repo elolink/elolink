@@ -39,7 +39,7 @@ const navItems: { id: PageId; label: string; icon: typeof Clock }[] = [
 
 export function AppShell({ page, onNavigate, children }: AppShellProps) {
   const { profile, user, signOut } = useAuth();
-  const { workspaces, activeWorkspace, setActiveWorkspaceId, createWorkspace, members } = useWorkspace();
+  const { workspaces, activeWorkspace, setActiveWorkspaceId, createWorkspace } = useWorkspace();
   const { toast } = useToast();
   const [wsMenuOpen, setWsMenuOpen] = useState(false);
   const [showCreateWs, setShowCreateWs] = useState(false);
@@ -68,8 +68,6 @@ export function AppShell({ page, onNavigate, children }: AppShellProps) {
       setWsMenuOpen(false);
     }
   }
-
-  const activeMembers = members.length;
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
@@ -179,7 +177,7 @@ export function AppShell({ page, onNavigate, children }: AppShellProps) {
         {/* Active workspace info */}
         {activeWorkspace && (
           <div className="border-t border-slate-100 px-4 py-3">
-            <p className="text-xs text-slate-400">{activeMembers} / {activeWorkspace.max_members} member{activeMembers !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-slate-400">{workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''}</p>
           </div>
         )}
 

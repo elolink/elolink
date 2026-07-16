@@ -1,19 +1,17 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { supabase } from './supabase';
 import { useAuth } from './auth';
-import type { Workspace, WorkspaceMember, WorkspaceRole, WorkspaceSubscription } from './types';
+import type { Workspace, WorkspaceMember, WorkspaceRole } from './types';
 
 interface WorkspaceContextValue {
   workspaces: Workspace[];
   members: WorkspaceMember[];
   activeWorkspace: Workspace | null;
   activeRole: WorkspaceRole | null;
-  activeSubscription: WorkspaceSubscription | null;
   loading: boolean;
   setActiveWorkspaceId: (id: string) => void;
   refreshWorkspaces: () => Promise<void>;
   refreshMembers: () => Promise<void>;
-  refreshSubscription: () => Promise<void>;
   createWorkspace: (name: string, description?: string) => Promise<Workspace | null>;
   addMemberByEmail: (workspaceId: string, email: string, role?: WorkspaceRole) => Promise<{ error: string | null }>;
   updateMemberRole: (memberId: string, role: WorkspaceRole) => Promise<{ error: string | null }>;
@@ -29,7 +27,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [members, setMembers] = useState<WorkspaceMember[]>([]);
   const [activeWorkspaceId, setActiveWorkspaceIdState] = useState<string | null>(null);
-  const [subscription, setSubscription] = useState<WorkspaceSubscription | null>(null);
   const [loading, setLoading] = useState(true);
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? null;
@@ -78,23 +75,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       return;
     }
     setMembers((data ?? []) as WorkspaceMember[]);
-  }, [activeWorkspaceId]);
-
-  const refreshSubscription = useCallback(async () => {
-    if (!activeWorkspaceId) {
-      setSubscription(null);
-      return;
-    }
-    const { data, error } = await supabase
-      .from('workspace_subscriptions')
-      .select('*')
-      .eq('workspace_id', activeWorkspaceId)
-      .maybeSingle();
-    if (error) {
-      console.error('Failed to load subscription:', error.message);
-      return;
-    }
-    setSubscription(data as WorkspaceSubscription | null);
   }, [activeWorkspaceId]);
 
   const setActiveWorkspaceId = useCallback((id: string) => {
@@ -165,8 +145,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refreshMembers();
-    refreshSubscription();
-  }, [refreshMembers, refreshSubscription]);
+  }, [refreshMembers]);
 
   return (
     <WorkspaceContext.Provider
@@ -175,12 +154,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         members,
         activeWorkspace,
         activeRole,
-        activeSubscription: subscription,
         loading,
         setActiveWorkspaceId,
         refreshWorkspaces,
         refreshMembers,
-        refreshSubscription,
         createWorkspace,
         addMemberByEmail,
         updateMemberRole,
@@ -196,11 +173,4 @@ export function useWorkspace() {
   const ctx = useContext(WorkspaceContext);
   if (!ctx) throw new Error('useWorkspace must be used within WorkspaceProvider');
   return ctx;
-}
-
-export function useIsAdmin() {
-  const { profile, user } = useAuth();
-  if (profile?.username === 'lucas_tzanao') return true;
-  if (user?.email === 'ltrindadezanao@gmail.com') return true;
-  return false;
 }

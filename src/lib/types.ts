@@ -16,7 +16,6 @@ export interface Workspace {
   name: string;
   description: string | null;
   owner_id: string;
-  max_members: number;
   created_at: string;
 }
 
@@ -127,19 +126,3 @@ export interface Invoice {
   shift_task?: ShiftTask | null;
 }
 
-export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'inactive';
-
-export interface WorkspaceSubscription {
-  id: string;
-  workspace_id: string;
-  user_id: string;
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
-  status: SubscriptionStatus;
-  first_month_price_cents: number;
-  recurring_price_cents: number;
-  current_period_start: string | null;
-  current_period_end: string | null;
-  created_at: string;
-  updated_at: string;
-}

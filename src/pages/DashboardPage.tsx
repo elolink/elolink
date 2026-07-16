@@ -262,7 +262,6 @@ export function DashboardPage({ onNavigate }: DashboardProps) {
               </button>
             </div>
             {inviteError && <p className="mt-2 text-sm text-red-600">{inviteError}</p>}
-            <p className="text-xs text-slate-400">{activeWorkspace.max_members - members.length} slot{activeWorkspace.max_members - members.length !== 1 ? 's' : ''} remaining</p>
           </form>
         )}
 
